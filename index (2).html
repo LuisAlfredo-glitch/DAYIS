@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feliz Cumpleaños Dayana</title>
+<style>
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --rose:#f3c6d9;
+    --purple:#c9a6e0;
+    --gold:#e8c27a;
+    --white:#fff7f0;
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Georgia','Times New Roman',serif;
+    background:#050505;
+    overflow-x:hidden;
+    overflow-y:auto;
+    transition:background 1.8s ease;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+  }
+  body:not(.lit){min-height:100vh;justify-content:center;}
+  body.lit{
+    background:linear-gradient(160deg,var(--white) 0%,var(--rose) 45%,var(--purple) 100%);
+  }
+
+  .dark-hint{
+    position:fixed;
+    bottom:calc(70px + env(safe-area-inset-bottom,0px));
+    right:20px;
+    font-size:0.75rem;
+    color:#555;
+    opacity:0.6;
+    transition:opacity 1s ease;
+    text-align:right;
+    max-width:140px;
+  }
+  body.lit .dark-hint{opacity:0;pointer-events:none;}
+
+  .lamp{
+    position:fixed;
+    bottom:calc(120px + env(safe-area-inset-bottom,0px));
+    right:34px;
+    font-size:2rem;
+    filter:grayscale(1) brightness(0.3);
+    transition:filter 1.2s ease, transform 1.2s ease;
+  }
+  body.lit .lamp{
+    filter:grayscale(0) brightness(1.3) drop-shadow(0 0 18px var(--gold));
+    transform:scale(1.15);
+  }
+
+  .lamp-btn{
+    position:fixed;
+    bottom:calc(30px + env(safe-area-inset-bottom,0px));
+    right:20px;
+    background:#1a1a1a;
+    color:#ccc;
+    border:1px solid #444;
+    padding:10px 18px;
+    border-radius:30px;
+    font-size:0.85rem;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    transition:all 0.4s ease;
+    z-index:10;
+  }
+  .lamp-btn:hover{background:#2a2a2a;color:#fff;}
+  body.lit .lamp-btn{opacity:0;pointer-events:none;}
+
+  .stage{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:50px 20px 140px;
+    width:100%;
+    max-width:480px;
+    opacity:0;
+    transition:opacity 1.6s ease;
+  }
+  body.lit .stage{display:flex;}
+  body.revealed .stage{opacity:1;}
+
+  .deco-row{
+    font-size:1.4rem;
+    letter-spacing:10px;
+    margin-bottom:6px;
+    color:var(--purple);
+  }
+
+  h1{
+    font-size:1.9rem;
+    margin:6px 0 2px;
+    color:#7a3b6e;
+    text-shadow:0 1px 0 rgba(255,255,255,0.5);
+  }
+  h2{
+    font-weight:400;
+    font-style:italic;
+    font-size:1.05rem;
+    margin:0 0 22px;
+    color:#8a5a7d;
+  }
+
+  .cake{
+    position:relative;
+    width:180px;
+    margin:10px auto 8px;
+  }
+  .cake svg{width:100%;height:auto;display:block;}
+  .flame{
+    transform-origin:center bottom;
+    transition:opacity 0.4s ease, transform 0.4s ease;
+  }
+  .flame.off{opacity:0;transform:scaleY(0.1);}
+
+  .blow-btn{
+    margin-top:18px;
+    background:linear-gradient(120deg,var(--purple),var(--rose));
+    color:#40203a;
+    border:none;
+    padding:12px 26px;
+    border-radius:30px;
+    font-size:0.95rem;
+    font-weight:bold;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(120,60,110,0.35);
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:all 0.8s ease;
+  }
+  .blow-btn.show{opacity:1;transform:translateY(0);pointer-events:auto;}
+  .blow-btn:active{transform:scale(0.96);}
+
+  .message{
+    margin-top:26px;
+    max-width:400px;
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(255,255,255,0.8);
+    border-radius:18px;
+    padding:22px 22px 20px;
+    font-size:1rem;
+    line-height:1.6;
+    color:#5a3350;
+    opacity:0;
+    transform:translateY(14px);
+    transition:all 1.2s ease;
+    text-align:left;
+  }
+  .message.show{opacity:1;transform:translateY(0);}
+  .message strong{color:#7a3b6e;}
+  .message p{margin:0 0 12px;}
+  .message .greek{color:#7a3b6e;}
+  .message .divider{text-align:center;color:#c9a6e0;margin:16px 0 14px;font-size:1rem;}
+  .message .spanish{font-size:0.95rem;}
+  .message{max-height:none;}
+  .signature{
+    display:block;
+    text-align:right;
+    margin-top:14px;
+    font-style:italic;
+    color:#7a3b6e;
+  }
+
+  .exit-btn{
+    margin-top:24px;
+    background:transparent;
+    border:1px solid #a877a0;
+    color:#7a3b6e;
+    padding:9px 20px;
+    border-radius:24px;
+    font-size:0.85rem;
+    cursor:pointer;
+    opacity:0;
+    transition:opacity 1s ease;
+  }
+  .exit-btn.show{opacity:0.85;}
+
+  .orchid{
+    position:absolute;
+    font-size:1.6rem;
+    opacity:0;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    0%{opacity:0;transform:translateY(-40px) rotate(0deg);}
+    10%{opacity:0.9;}
+    100%{opacity:0;transform:translateY(520px) rotate(200deg);}
+  }
+
+  .overlay-msg{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.85);
+    color:#eee;
+    font-size:1rem;
+    text-align:center;
+    padding:30px;
+    z-index:50;
+  }
+</style>
+</head>
+<body>
+
+  <div class="dark-hint">psst... hay algo aquí abajo</div>
+  <div class="lamp">💡</div>
+  <button class="lamp-btn" id="lampBtn">da clic</button>
+
+  <div class="stage" id="stage">
+    <div class="deco-row">🪻 · 🦋 · 🪻</div>
+    <h1>Feliz Cumpleaños, Dayana</h1>
+    <h2>16 años de la mujer más hermosa</h2>
+
+    <div class="cake">
+      <svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+        <g class="flame" data-flame>
+          <ellipse cx="60" cy="18" rx="5" ry="10" fill="#e8955a"/>
+          <ellipse cx="60" cy="20" rx="2.5" ry="5" fill="#ffdf8a"/>
+        </g>
+        <g class="flame" data-flame>
+          <ellipse cx="100" cy="12" rx="5" ry="10" fill="#e8955a"/>
+          <ellipse cx="100" cy="14" rx="2.5" ry="5" fill="#ffdf8a"/>
+        </g>
+        <g class="flame" data-flame>
+          <ellipse cx="140" cy="18" rx="5" ry="10" fill="#e8955a"/>
+          <ellipse cx="140" cy="20" rx="2.5" ry="5" fill="#ffdf8a"/>
+        </g>
+        <rect x="58" y="22" width="4" height="20" fill="#f4e6c9"/>
+        <rect x="98" y="16" width="4" height="20" fill="#f4e6c9"/>
+        <rect x="138" y="22" width="4" height="20" fill="#f4e6c9"/>
+        <rect x="30" y="42" width="140" height="35" rx="6" fill="#f3c6d9"/>
+        <rect x="30" y="42" width="140" height="10" rx="5" fill="#fff7f0"/>
+        <rect x="20" y="77" width="160" height="45" rx="8" fill="#c9a6e0"/>
+        <rect x="20" y="77" width="160" height="10" rx="5" fill="#f3c6d9"/>
+        <text x="100" y="105" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="20" fill="#5a3350">Dayis</text>
+        <rect x="10" y="122" width="180" height="38" rx="10" fill="#e8c27a"/>
+        <rect x="10" y="122" width="180" height="10" rx="5" fill="#f9e6b8"/>
+      </svg>
+    </div>
+
+    <button class="blow-btn" id="blowBtn">sopla las velas 🕯️</button>
+
+    <div class="message" id="message">
+      <div class="greek">
+        <p>Ες οϊ... ες οϊιι, έστε δία 30 δε σεπτιέμπρε, πέρο άσε 16 άνιος νασιό ούνα περσονίτα μούι εσπεσιάλ πάρα μι, κε νούνκα ουμπιέρα πενσάδο κε λα κονοσερία. Σιν εμπάργο, ακί εστάμος. Έστε δία, κιέρο ρρεκορδάρτε λο εσπεσιάλ κε έρες πάρα μι, λα γκραν περσόνα κε έρες. Νούνκα κάμπιες, σε του μίσμα. Με ενκαντάν τόδας ι κάδα ούνα δε τους λοκούρας ι λας λεκσιόνες κε με ας δάδο κον λο πόκο κε γιεβάμος δε τιέμπο.</p>
+        <p>Εσπέρο ποδέρ σεγκίρ κομπαρτιέντο μούτσος μομέντος κοντίγκο, σεγκίρ κονοσιέντο κάδα πάρτε δε τι ι εστάρ πρεσέντε εν μούτσος κουμπλεάνιος μας. Γκράσιας πορ γιεγκάρ α μι βίδα ι ασέρλα ούν ποκίτο μας μπονίτα κον του φόρμα δε σερ.</p>
+        <p>Οϊ ες ούν γκραν δία πάρα τόδος, πορκέ οϊ άσε 16 άνιος νασιό λα πρινσέσα μας μαραβιγιόσα δε Ντίσνεϊ ι δελ μούνδο.</p>
+        <p>Τε άμο, μι αμόρ, Ντάις.</p>
+        <p>Φελίς κουμπλεάνιος, μι αμόρ.</p>
+        <span class="signature">ΑΤΤ: Λουίς (του πρίνσιπε)</span>
+      </div>
+
+      <div class="divider">✦</div>
+
+      <div class="spanish">
+        <p>Es hoy... es hoyyy, este día 30 de septiembre, pero hace 16 años nació una personita muy especial para mí, que nunca hubiera pensado que la conocería. Sin embargo, aquí estamos. Este día, quiero recordarte lo especial que eres para mí, la gran persona que eres. Nunca cambies, sé tú misma. Me encantan todas y cada una de tus locuras y las lecciones que me has dado con lo poco que llevamos de tiempo.</p>
+        <p>Espero poder seguir compartiendo muchos momentos contigo, seguir conociendo cada parte de ti y estar presente en muchos cumpleaños más. Gracias por llegar a mi vida y hacerla un poquito más bonita con tu forma de ser.</p>
+        <p>Hoy es un gran día para todos, porque hoy hace 16 años nació la princesa más maravillosa de Disney y del mundo.</p>
+        <p>Te amo, mi amor, Dayis.</p>
+        <p>Feliz cumpleaños, mi amor.</p>
+        <span class="signature">ATT: Luis (tu príncipe)</span>
+      </div>
+    </div>
+
+    <button class="exit-btn" id="exitBtn">cerrar</button>
+  </div>
+
+<script>
+  const body = document.body;
+  const lampBtn = document.getElementById('lampBtn');
+  const stage = document.getElementById('stage');
+  const blowBtn = document.getElementById('blowBtn');
+  const flames = document.querySelectorAll('[data-flame]');
+  const message = document.getElementById('message');
+  const exitBtn = document.getElementById('exitBtn');
+
+  lampBtn.addEventListener('click', () => {
+    body.classList.add('lit');
+    setTimeout(() => {
+      body.classList.add('revealed');
+      setTimeout(() => blowBtn.classList.add('show'), 900);
+    }, 300);
+  });
+
+  let blown = false;
+  blowBtn.addEventListener('click', () => {
+    if (blown) return;
+    blown = true;
+    flames.forEach((f, i) => {
+      setTimeout(() => f.classList.add('off'), i * 180);
+    });
+
+    for (let i = 0; i < 14; i++) {
+      const petal = document.createElement('div');
+      petal.className = 'orchid';
+      petal.textContent = i % 2 === 0 ? '🪻' : '🌸';
+      petal.style.left = (10 + Math.random() * 80) + '%';
+      petal.style.top = '0px';
+      petal.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      petal.style.animationDelay = (Math.random() * 0.8) + 's';
+      document.body.appendChild(petal);
+      setTimeout(() => petal.remove(), 5000);
+    }
+
+    blowBtn.classList.remove('show');
+    setTimeout(() => {
+      message.classList.add('show');
+      setTimeout(() => exitBtn.classList.add('show'), 900);
+    }, 700);
+  });
+
+  exitBtn.addEventListener('click', () => {
+    document.body.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'overlay-msg';
+    div.textContent = 'Gracias por leerlo. Te amo. — Luis 🪻';
+    document.body.appendChild(div);
+    setTimeout(() => { try { window.close(); } catch(e){} }, 2500);
+  });
+</script>
+</body>
+</html>
